@@ -1,0 +1,39 @@
+<resources>
+    <string name="app_name">Michael Hefner c196</string>
+    <string name="instructor_header">Add Instructor</string>
+    <string name="instructors_name">Instructors Name</string>
+    <string name="name">Name</string>
+    <string name="instructor_email">Instructor Email</string>
+    <string name="instructor_phone_number">Instructor Phone Number</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="email">Email</string>
+    <string name="submit">Submit</string>
+    <string name="course_planner">Course Planner</string>
+    <string name="add_instructor">Add Instructor</string>
+    <string name="type">Type</string>
+    <string name="add_assessment">Add Assessment</string>
+    <string name="start_date">Start Date</string>
+    <string name="add_term">Add Term</string>
+    <string name="title">Title</string>
+    <string name="end_date">End Date</string>
+    <string name="status">Status</string>
+    <string name="add_course">Add Course</string>
+    <string name="instructor">Instructor</string>
+    <string name="course_list">Course List</string>
+    <string name="term_list">Term List</string>
+    <string name="term">Term</string>
+    <string-array name="action_picker">
+        <item>Select an Item To Add</item>
+        <item>Add Course</item>
+        <item>Add Instructor</item>
+        <item>Add Assessment</item>
+        <item>Add Term</item>
+    </string-array>
+    <string-array name="course_picker">
+        <item>Courses</item>
+    </string-array>
+
+    <string-array name="term_picker">
+        <item>Terms</item>
+    </string-array>
+</resources>

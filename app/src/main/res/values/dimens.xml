@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="Heading">32sp</dimen>
+    <dimen name="label_size">18sp</dimen>
+    <dimen name="input_size">18sp</dimen>
+</resources>
