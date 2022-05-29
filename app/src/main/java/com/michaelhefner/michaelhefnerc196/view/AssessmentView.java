@@ -17,7 +17,7 @@ import com.michaelhefner.michaelhefnerc196.controller.DBHandler;
 import java.util.HashMap;
 import java.util.Objects;
 
-public class AddAssessment extends AppCompatActivity {
+public class AssessmentView extends AppCompatActivity {
 
     private DBHandler mDBHandler;
     private EditText mNameEDT;
@@ -30,8 +30,10 @@ public class AddAssessment extends AppCompatActivity {
         setContentView(R.layout.activity_add_assessment);
 
         mDBHandler = new DBHandler(this);
+
         mTypeEDT = findViewById(R.id.edtType);
         mNameEDT = findViewById(R.id.edtAssessmentName);
+
         mAddBTN = findViewById(R.id.btnSubmit);
 
         mAddBTN.setOnClickListener(view -> {

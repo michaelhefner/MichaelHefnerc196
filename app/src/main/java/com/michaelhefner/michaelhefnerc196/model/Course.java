@@ -19,14 +19,17 @@ public class Course {
     private String mStatus;
     private String mTerm;
     private String mAssessment;
+    private String mInstructor;
+    private String mID;
 
-    public Course(String title, String startDate, String endDate, String status, String assessment, String term) {
+    public Course(String title, String startDate, String endDate, String status, String assessment, String term, String instructor) {
         setTitle(title);
         setAssessment(assessment);
         setEndDate(endDate);
         setStartDate(startDate);
         setStatus(status);
         setTerm(term);
+        setInstructor(instructor);
     }
 
     public String getTitle() {
@@ -75,5 +78,21 @@ public class Course {
 
     public void setTerm(String mTerm) {
         this.mTerm = mTerm;
+    }
+
+    public String getID() {
+        return mID;
+    }
+
+    public void setID(String ID) {
+        this.mID = ID;
+    }
+
+    public String getInstructor() {
+        return mInstructor;
+    }
+
+    public void setInstructor(String instructor) {
+        this.mInstructor = instructor;
     }
 }

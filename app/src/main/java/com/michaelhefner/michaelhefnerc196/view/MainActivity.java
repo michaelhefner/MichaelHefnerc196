@@ -2,6 +2,7 @@ package com.michaelhefner.michaelhefnerc196.view;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,17 +11,18 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.ListView;
 import android.widget.Spinner;
 
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.michaelhefner.michaelhefnerc196.R;
 import com.michaelhefner.michaelhefnerc196.controller.DBHandler;
+import com.michaelhefner.michaelhefnerc196.databinding.ActivityMainBinding;
+import com.michaelhefner.michaelhefnerc196.databinding.ActivityTermDetailsBinding;
 import com.michaelhefner.michaelhefnerc196.model.Course;
-import com.michaelhefner.michaelhefnerc196.model.Instructor;
 import com.michaelhefner.michaelhefnerc196.model.Term;
 
 import java.util.ArrayList;
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,78 +30,24 @@ import java.util.stream.IntStream;
 
 public class MainActivity extends AppCompatActivity {
 
-    private DBHandler mDBHandler = new DBHandler(this);
-    private Spinner mAddInstructorBtn;
-    private Button mAddAssessmentBtn;
-    private Spinner mCourseList;
-    private Spinner mTermList;
-    private Context context;
-    private Spinner mActionSpinner;
+    private ActivityMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+//        setContentView(R.layout.activity_main);
 
-        Map<String, Class> classes = new HashMap<>();
-        classes.put("Add Instructor", AddInstructor.class);
-        classes.put("Add Assessment", AddAssessment.class);
-        classes.put("Add Course", AddCourse.class);
-        classes.put("Add Term", AddTerm.class);
-        mActionSpinner = findViewById(R.id.actionPicker);
-        /**/
-        populateCourses();
-        /**/
-        populateTerms();
-        /**/
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        /**/
-        context = this;
+        Toolbar toolbar = binding.toolbar;
+        setSupportActionBar(toolbar);
+        CollapsingToolbarLayout toolBarLayout = binding.toolbarLayout;
+        toolBarLayout.setTitle(getTitle());
 
-        mActionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.i("spinner change", mActionSpinner.getSelectedItem().toString());
-                String selectedItem = mActionSpinner.getSelectedItem().toString();
-                if (!selectedItem.isEmpty() && classes.get(selectedItem) != null){
-                    Intent intent = new Intent(context, classes.get(mActionSpinner.getSelectedItem().toString()));
-                    startActivity(intent);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
+        startActivity(new Intent(this, TermDetails.class));
     }
 
-    private void populateCourses() {
-        mCourseList = findViewById(R.id.spnCourseList);
-        List<Course> courseList =  mDBHandler.courseQuery();
-        List<String> stringList = new ArrayList<>();
-        IntStream.range(0, courseList.size()).forEach(i -> {
-            stringList.add(courseList.get(i).getTitle());
-        });
-        mCourseList.setAdapter(getStringArrayAdapter(stringList));
-    }
-
-    private void populateTerms() {
-        mTermList = findViewById(R.id.spnTermList);
-        List<Term> termList =  mDBHandler.termQuery(null);
-        List<String> terms = new ArrayList<>();
-        IntStream.range(0, termList.size()).forEach(i -> {
-            terms.add(termList.get(i).getTitle());
-        });
-        mTermList.setAdapter(getStringArrayAdapter(terms));
-    }
-
-    @NonNull
-    private ArrayAdapter<String> getStringArrayAdapter(List<String> stringList) {
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(),  android.R.layout.simple_spinner_dropdown_item, stringList);
-        adapter.setDropDownViewResource( android.R.layout.simple_spinner_dropdown_item);
-        return adapter;
-    }
 }
 
 /*

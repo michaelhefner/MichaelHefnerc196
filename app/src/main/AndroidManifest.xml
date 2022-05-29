@@ -9,21 +9,27 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MichaelHefnerC196">
+
         <activity
-            android:name=".view.AddCourse"
+            android:name=".view.CourseView"
             android:exported="false" />
         <activity
-            android:name=".view.AddTerm"
+            android:name=".view.TermDetails"
             android:exported="false" />
         <activity
-            android:name=".view.AddAssessment"
+            android:name=".view.TermView"
             android:exported="false" />
         <activity
-            android:name=".view.AddInstructor"
+            android:name=".view.AssessmentView"
+            android:exported="false" />
+        <activity
+            android:name=".view.InstructorVIew"
             android:exported="false" />
         <activity
             android:name=".view.MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:label="@string/title_activity_term_details"
+            android:theme="@style/Theme.MichaelHefnerC196.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

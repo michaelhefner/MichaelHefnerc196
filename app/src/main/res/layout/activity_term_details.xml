@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+tools:context=".view.TermDetails">
+
+<TextView
+    android:id="@+id/textView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="24dp"
+    android:text="@string/course_planner"
+    android:textAlignment="center"
+    android:textSize="@dimen/Heading"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintTop_toTopOf="parent" />
+
+<TextView
+    android:id="@+id/lblCourseList"
+    android:text="@string/course_list"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="45dp"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/spnTermList"
+    />
+
+<Spinner
+    android:id="@+id/spnTermList"
+    style="@android:style/Widget.Material.Spinner.Underlined"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="48dp"
+    android:layout_marginEnd="48dp"
+    android:entries="@array/term_picker"
+    android:minHeight="48dp"
+    android:spinnerMode="dialog"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/lblTermList" />
+
+<TextView
+    android:id="@+id/lblTermList"
+    android:text="@string/term_list"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="45dp"
+    android:layout_marginTop="48dp"
+    android:layout_marginBottom="7dp"
+    app:layout_constraintTop_toBottomOf="@+id/textView"
+    app:layout_constraintStart_toStartOf="parent" />
+
+<Spinner
+    android:id="@+id/actionPicker"
+    style="@android:style/Widget.Material.Spinner.Underlined"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="24dp"
+    android:layout_marginEnd="24dp"
+    android:layout_marginBottom="48dp"
+
+    android:entries="@array/action_picker"
+    android:minHeight="48dp"
+    android:spinnerMode="dialog"
+    android:textAlignment="center"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent" />
+
+<ListView
+    android:id="@+id/lstCourseList"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="48dp"
+    android:layout_marginEnd="48dp"
+    android:entries="@array/course_picker"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/lblCourseList" />
+</androidx.constraintlayout.widget.ConstraintLayout>

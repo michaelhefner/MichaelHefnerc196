@@ -19,7 +19,7 @@ import java.util.List;
 
 public class DBHandler extends SQLiteOpenHelper {
     private static final String DB_NAME = "CourseDB";
-    private static final int DB_VERSION = 12;
+    private static final int DB_VERSION = 15;
     private static final String ID_COL = "id";
     private static final String NAME_COL = "name";
     private static final String TITLE = "title";
@@ -31,6 +31,7 @@ public class DBHandler extends SQLiteOpenHelper {
     private static final String TYPE = "type";
     private static final String TERM_FK = "termID";
     private static final String COURSE_FK = "courseID";
+    private static final String INSTRUCTOR_FK = "instructorID";
     private static final String ASSESSMENT_FK = "assessmentID";
 
     public DBHandler(Context context) {
@@ -47,7 +48,9 @@ public class DBHandler extends SQLiteOpenHelper {
                 + STATUS + " TEXT,"
                 + ASSESSMENT_FK + " INTEGER,"
                 + TERM_FK + " INTEGER,"
+                + INSTRUCTOR_FK + " INTEGER,"
                 + " FOREIGN KEY ("+ASSESSMENT_FK+") REFERENCES assessment_types(id),"
+                + " FOREIGN KEY ("+INSTRUCTOR_FK+") REFERENCES instructors(id),"
                 + " FOREIGN KEY ("+TERM_FK+") REFERENCES terms(id));");
         db.execSQL("CREATE TABLE instructors" + " ("
                 + ID_COL + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -66,7 +69,7 @@ public class DBHandler extends SQLiteOpenHelper {
                 + END_DATE + " TEXT)");
     }
 
-    public HashMap<String, String> addNewCourse(String courseTitle, String startDate, String endDate, String status, String assessment, String term) {
+    public HashMap<String, String> addNewCourse(String courseTitle, String startDate, String endDate, String status, String assessment, String term, String instructor) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
@@ -76,6 +79,7 @@ public class DBHandler extends SQLiteOpenHelper {
         values.put(STATUS, status);
         values.put(TERM_FK, term);
         values.put(ASSESSMENT_FK, assessment);
+        values.put(INSTRUCTOR_FK, instructor);
         db.insert("courses", null, values);
         Log.i("test", "add new course");
         db.close();
@@ -85,11 +89,9 @@ public class DBHandler extends SQLiteOpenHelper {
         return result;
     }
 
-    public List<Term> termQuery(String whereString) {//String whereClause, String[] whereArgs) {
+    public List<Term> termQuery(String whereString) {
         SQLiteDatabase db = this.getWritableDatabase();
-        String where = whereString == null ||
-                whereString.isEmpty() ? null : "name = \"" + whereString + "\"";
-        Cursor cursor = db.query("terms", null, where, null, null, null, null);
+        Cursor cursor = db.query("terms", null, whereString, null, null, null, null);
         List<Term> termList = new ArrayList<>();
 
         if (cursor != null) {
@@ -101,7 +103,9 @@ public class DBHandler extends SQLiteOpenHelper {
                         String startDate = getValue(cursor, START_DATE);
                         String endDate = getValue(cursor, END_DATE);
                         String name = getValue(cursor, NAME_COL);
+                        String id = getValue(cursor, ID_COL);
                         Term term = new Term(title, startDate, endDate, name);
+                        term.setID(id);
                         termList.add(term);
                         cursor.moveToNext();
                     }
@@ -115,9 +119,9 @@ public class DBHandler extends SQLiteOpenHelper {
         return termList;
     }
 
-    public List<Course> courseQuery() {//String whereClause, String[] whereArgs) {
+    public List<Course> courseQuery(String whereString) {
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.query("courses", null, null, null, null, null, null);
+        Cursor cursor = db.query("courses", null, whereString, null, null, null, null);
         List<Course> courseList = new ArrayList<>();
         try {
             try {
@@ -130,8 +134,8 @@ public class DBHandler extends SQLiteOpenHelper {
                     String status = getValue(cursor, STATUS);
                     String term = getValue(cursor, TERM_FK);
                     String assessment = getValue(cursor, ASSESSMENT_FK);
-                    Log.i("cursor count", title);
-                    Course course = new Course(title, startDate, endDate, status, assessment, term);
+                    String instructor = getValue(cursor, INSTRUCTOR_FK);
+                    Course course = new Course(title, startDate, endDate, status, assessment, term, instructor);
                     courseList.add(course);
                     cursor.moveToNext();
                 }
@@ -144,11 +148,10 @@ public class DBHandler extends SQLiteOpenHelper {
         return courseList;
     }
 
-    public List<Assessment> assessmentQuery(String whereString) {//String whereClause, String[] whereArgs) {
+    public List<Assessment> assessmentQuery(String whereString) {
         SQLiteDatabase db = this.getWritableDatabase();
-        String where = whereString == null ||
-                whereString.isEmpty() ? null : "name = \"" + whereString + "\"";
-        Cursor cursor = db.query("assessment_types", null, where, null, null, null, null);
+
+        Cursor cursor = db.query("assessment_types", null, whereString, null, null, null, null);
         List<Assessment> assessmentList = new ArrayList<>();
         try {
             try {
@@ -171,9 +174,9 @@ public class DBHandler extends SQLiteOpenHelper {
         }
         return assessmentList;
     }
-    public List<Instructor> instructorQuery() {//String whereClause, String[] whereArgs) {
+    public List<Instructor> instructorQuery(String whereString) {
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.query("instructors", null, null, null, null, null, null);
+        Cursor cursor = db.query("instructors", null, whereString, null, null, null, null);
         List<Instructor> instructorList = new ArrayList<>();
         try {
             try {

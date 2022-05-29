@@ -17,33 +17,34 @@ import com.michaelhefner.michaelhefnerc196.controller.DBHandler;
 import java.util.HashMap;
 import java.util.Objects;
 
-public class AddInstructor extends AppCompatActivity {
+public class TermView extends AppCompatActivity {
 
     private DBHandler mDBHandler;
     private EditText mNameEDT;
-    private EditText mEmailEDT;
-    private EditText mPhoneEDT;
+    private EditText mTitleEDT;
+    private EditText mStartDateEDT;
+    private EditText mEndDateEDT;
     private Button mAddBTN;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_insructor);
+        setContentView(R.layout.activity_add_term);
 
         mDBHandler = new DBHandler(this);
-        mEmailEDT = findViewById(R.id.edtEmailAddress);
-        mNameEDT = findViewById(R.id.edtPersonName);
-        mPhoneEDT = findViewById(R.id.edtPhoneNumber);
+        mTitleEDT = findViewById(R.id.edtTitle);
+        mStartDateEDT = findViewById(R.id.edtStartDate);
+        mEndDateEDT = findViewById(R.id.edtEndDate);
+        mNameEDT = findViewById(R.id.edtName);
         mAddBTN = findViewById(R.id.btnSubmit);
 
-
         mAddBTN.setOnClickListener(view -> {
-            String email = mEmailEDT.getText().toString();
+            String title = mTitleEDT.getText().toString();
+            String startDate = mStartDateEDT.getText().toString();
+            String endDate = mEndDateEDT.getText().toString();
             String name = mNameEDT.getText().toString();
-            String phone = mPhoneEDT.getText().toString();
             hideSoftKeyboard(view);
-            HashMap<String, String> newInstructor = mDBHandler.addNewInstructor(name, email, phone);
-            Snackbar snackbar = Snackbar.make(view, Objects.requireNonNull(newInstructor.get("res")), Snackbar.LENGTH_SHORT);
+            HashMap<String, String> newTerm = mDBHandler.addNewTerm(title, startDate, endDate, name);
+            Snackbar snackbar = Snackbar.make(view, Objects.requireNonNull(newTerm.get("res")), Snackbar.LENGTH_SHORT);
             snackbar.show();
             startActivity(new Intent(this, MainActivity.class));
 

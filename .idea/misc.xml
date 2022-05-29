@@ -7,7 +7,9 @@
         <entry key="app/src/main/res/layout/activity_add_course.xml" value="0.22" />
         <entry key="app/src/main/res/layout/activity_add_insructor.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_add_term.xml" value="0.33" />
-        <entry key="app/src/main/res/layout/activity_main.xml" value="0.67" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.15" />
+        <entry key="app/src/main/res/layout/activity_term_details.xml" value="0.1" />
+        <entry key="app/src/main/res/menu/menu_term_details.xml" value="0.21302083333333333" />
       </map>
     </option>
   </component>

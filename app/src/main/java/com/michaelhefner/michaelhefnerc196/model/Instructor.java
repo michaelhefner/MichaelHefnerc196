@@ -4,6 +4,7 @@ public class Instructor {
     private String mName;
     private String mPhoneNumber;
     private String mEmailAddress;
+    private String mID;
 
     public Instructor(String name, String phoneNumber, String emailAddress){
         setEmailAddress(emailAddress);
@@ -33,5 +34,13 @@ public class Instructor {
 
     public void setEmailAddress(String emailAddress) {
         this.mEmailAddress = emailAddress;
+    }
+
+    public String getID() {
+        return mID;
+    }
+
+    public void setID(String ID) {
+        this.mID = ID;
     }
 }
