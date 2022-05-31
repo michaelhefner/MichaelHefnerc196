@@ -18,8 +18,9 @@ import java.util.HashMap;
 import java.util.List;
 
 public class DBHandler extends SQLiteOpenHelper {
+
     private static final String DB_NAME = "CourseDB";
-    private static final int DB_VERSION = 15;
+    private static final int DB_VERSION = 19;
     private static final String ID_COL = "id";
     private static final String NAME_COL = "name";
     private static final String TITLE = "title";
@@ -30,7 +31,6 @@ public class DBHandler extends SQLiteOpenHelper {
     private static final String PHONE_NUMBER = "phoneNumber";
     private static final String TYPE = "type";
     private static final String TERM_FK = "termID";
-    private static final String COURSE_FK = "courseID";
     private static final String INSTRUCTOR_FK = "instructorID";
     private static final String ASSESSMENT_FK = "assessmentID";
 
@@ -49,46 +49,35 @@ public class DBHandler extends SQLiteOpenHelper {
                 + ASSESSMENT_FK + " INTEGER,"
                 + TERM_FK + " INTEGER,"
                 + INSTRUCTOR_FK + " INTEGER,"
-                + " FOREIGN KEY ("+ASSESSMENT_FK+") REFERENCES assessment_types(id),"
-                + " FOREIGN KEY ("+INSTRUCTOR_FK+") REFERENCES instructors(id),"
-                + " FOREIGN KEY ("+TERM_FK+") REFERENCES terms(id));");
+                + " FOREIGN KEY (" + ASSESSMENT_FK + ") REFERENCES assessment_types(id),"
+                + " FOREIGN KEY (" + INSTRUCTOR_FK + ") REFERENCES instructors(id),"
+                + " FOREIGN KEY (" + TERM_FK + ") REFERENCES terms(id));"
+        );
         db.execSQL("CREATE TABLE instructors" + " ("
                 + ID_COL + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + NAME_COL + " TEXT,"
                 + EMAIL_ADDRESS + " TEXT,"
-                + PHONE_NUMBER + " TEXT)");
+                + PHONE_NUMBER + " TEXT)"
+        );
         db.execSQL("CREATE TABLE assessment_types" + " ("
                 + ID_COL + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + NAME_COL + " TEXT,"
-                + TYPE + " TEXT)");
+                + TYPE + " TEXT,"
+                + START_DATE + " TEXT,"
+                + END_DATE + " TEXT)"
+        );
         db.execSQL("CREATE TABLE terms" + " ("
                 + ID_COL + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + NAME_COL + " TEXT,"
                 + TITLE + " TEXT,"
                 + START_DATE + " TEXT,"
-                + END_DATE + " TEXT)");
+                + END_DATE + " TEXT)"
+        );
     }
 
-    public HashMap<String, String> addNewCourse(String courseTitle, String startDate, String endDate, String status, String assessment, String term, String instructor) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-
-        values.put(TITLE, courseTitle);
-        values.put(START_DATE, startDate);
-        values.put(END_DATE, endDate);
-        values.put(STATUS, status);
-        values.put(TERM_FK, term);
-        values.put(ASSESSMENT_FK, assessment);
-        values.put(INSTRUCTOR_FK, instructor);
-        db.insert("courses", null, values);
-        Log.i("test", "add new course");
-        db.close();
-
-        HashMap<String, String> result = new HashMap<>();
-        result.put("res", "Course Added");
-        return result;
-    }
-
+    /****************************************
+     QUERY
+     ***************************************/
     public List<Term> termQuery(String whereString) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.query("terms", null, whereString, null, null, null, null);
@@ -136,6 +125,7 @@ public class DBHandler extends SQLiteOpenHelper {
                     String assessment = getValue(cursor, ASSESSMENT_FK);
                     String instructor = getValue(cursor, INSTRUCTOR_FK);
                     Course course = new Course(title, startDate, endDate, status, assessment, term, instructor);
+                    course.setID(getValue(cursor, ID_COL));
                     courseList.add(course);
                     cursor.moveToNext();
                 }
@@ -155,13 +145,15 @@ public class DBHandler extends SQLiteOpenHelper {
         List<Assessment> assessmentList = new ArrayList<>();
         try {
             try {
-                Log.i("cursor count", String.valueOf(cursor.getCount()));
+                Log.i("assessment count", String.valueOf(cursor.getCount()));
                 cursor.moveToFirst();
                 while (!cursor.isAfterLast()) {
                     String name = getValue(cursor, NAME_COL);
                     String type = getValue(cursor, TYPE);
+                    String startDate = getValue(cursor, START_DATE);
+                    String endDate = getValue(cursor, END_DATE);
                     String id = getValue(cursor, ID_COL);
-                    Assessment assessment = new Assessment(name, type);
+                    Assessment assessment = new Assessment(name, type, startDate, endDate);
                     assessment.setID(id);
                     assessmentList.add(assessment);
                     cursor.moveToNext();
@@ -174,6 +166,7 @@ public class DBHandler extends SQLiteOpenHelper {
         }
         return assessmentList;
     }
+
     public List<Instructor> instructorQuery(String whereString) {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.query("instructors", null, whereString, null, null, null, null);
@@ -188,7 +181,8 @@ public class DBHandler extends SQLiteOpenHelper {
                     String email = getValue(cursor, EMAIL_ADDRESS);
 
                     Log.i("cursor count", name);
-                    Instructor instructor = new Instructor(name,phoneNum, email);
+                    Instructor instructor = new Instructor(name, phoneNum, email);
+                    instructor.setID(getValue(cursor, ID_COL));
                     instructorList.add(instructor);
                     cursor.moveToNext();
                 }
@@ -200,17 +194,43 @@ public class DBHandler extends SQLiteOpenHelper {
         }
         return instructorList;
     }
-    private String getValue(Cursor cursor, String string){
+
+    private String getValue(Cursor cursor, String string) {
         @SuppressLint("Range") String str = cursor.getString(cursor.getColumnIndex(string));
         return str;
     }
 
-    public HashMap<String, String> addNewTerm(String courseTitle, String startDate, String endDate, String name) {
+    /****************************************
+     ADD
+     ***************************************/
+
+
+    public HashMap<String, String> addCourse(String courseTitle, String startDate, String endDate, String status, String assessment, String term, String instructor) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put(TITLE, courseTitle);
+        values.put(START_DATE, startDate);
+        values.put(END_DATE, endDate);
+        values.put(STATUS, status);
+        values.put(TERM_FK, term);
+        values.put(ASSESSMENT_FK, assessment);
+        values.put(INSTRUCTOR_FK, instructor);
+        db.insert("courses", null, values);
+        Log.i("test", "add new course");
+        db.close();
+
+        HashMap<String, String> result = new HashMap<>();
+        result.put("res", "Course Added");
+        return result;
+    }
+
+    public HashMap<String, String> addTerm(String title, String startDate, String endDate, String name) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
 
-        values.put(TITLE, courseTitle);
+        values.put(TITLE, title);
         values.put(START_DATE, startDate);
         values.put(END_DATE, endDate);
         values.put(NAME_COL, name);
@@ -224,7 +244,7 @@ public class DBHandler extends SQLiteOpenHelper {
         return result;
     }
 
-    public HashMap<String, String> addNewInstructor(String instructorName, String emailAddress, String phoneNumber) {
+    public HashMap<String, String> addInstructor(String instructorName, String emailAddress, String phoneNumber) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -240,13 +260,15 @@ public class DBHandler extends SQLiteOpenHelper {
         return result;
     }
 
-    public HashMap<String, String> addNewAssessment(String name, String type) {
+    public HashMap<String, String> addAssessment(String name, String type, String startDate, String endDate) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
 
         values.put(NAME_COL, name);
         values.put(TYPE, type);
+        values.put(START_DATE, startDate);
+        values.put(END_DATE, endDate);
         db.insert("assessment_types", null, values);
         db.close();
 
@@ -255,6 +277,124 @@ public class DBHandler extends SQLiteOpenHelper {
         return result;
     }
 
+    /****************************************
+     EDIT
+     ***************************************/
+
+    public HashMap<String, String> editCourse(String courseID, String courseTitle, String startDate, String endDate, String status, String assessment, String term, String instructor) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put(TITLE, courseTitle);
+        values.put(START_DATE, startDate);
+        values.put(END_DATE, endDate);
+        values.put(STATUS, status);
+        values.put(TERM_FK, term);
+        values.put(ASSESSMENT_FK, assessment);
+        values.put(INSTRUCTOR_FK, instructor);
+        db.update("courses", values, "id = \'" + courseID + "\'", null);
+        Log.i("test", "add new course");
+        db.close();
+
+        HashMap<String, String> result = new HashMap<>();
+        result.put("res", "Course Added");
+        return result;
+    }
+
+
+    public HashMap<String, String> editTerm(String id, String title, String startDate, String endDate, String name) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        values.put(TITLE, title);
+        values.put(START_DATE, startDate);
+        values.put(END_DATE, endDate);
+        values.put(NAME_COL, name);
+        db.update("terms", values, "id = \'" + id + "\'", null);
+        db.close();
+
+        HashMap<String, String> result = new HashMap<>();
+        result.put("res", "Term Added");
+        return result;
+    }
+
+    public HashMap<String, String> editInstructor(String id, String instructorName, String emailAddress, String phoneNumber) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+
+        values.put(NAME_COL, instructorName);
+        values.put(EMAIL_ADDRESS, emailAddress);
+        values.put(PHONE_NUMBER, phoneNumber);
+        db.update("instructors", values, "id = \'" + id + "\'", null);
+        db.close();
+
+        HashMap<String, String> result = new HashMap<>();
+        result.put("res", "Instructor Added");
+        return result;
+    }
+
+    public HashMap<String, String> editAssessment(String id, String name, String type, String startDate, String endDate) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+
+        values.put(NAME_COL, name);
+        values.put(TYPE, type);
+        values.put(START_DATE, startDate);
+        values.put(END_DATE, endDate);
+        db.update("assessment_types", values, "id = \'" + id + "\'", null);
+        db.close();
+
+        HashMap<String, String> result = new HashMap<>();
+        result.put("res", "Assessment Added");
+        return result;
+    }
+    /****************************************
+     DELETE
+     ***************************************/
+
+    public HashMap<String, String> deleteCourse(String courseID) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete("courses", "id = \'" + courseID + "\'", null);
+        db.close();
+
+        HashMap<String, String> result = new HashMap<>();
+        result.put("res", "Course Removed");
+        return result;
+    }
+
+
+    public HashMap<String, String> deleteTerm(String id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete("terms", "id = \'" + id + "\'", null);
+        db.close();
+
+        HashMap<String, String> result = new HashMap<>();
+        result.put("res", "Term Removed");
+        return result;
+    }
+
+    public HashMap<String, String> deleteInstructor(String id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.delete("instructors", "id = \'" + id + "\'", null);
+        db.close();
+
+        HashMap<String, String> result = new HashMap<>();
+        result.put("res", "Instructor Removed");
+        return result;
+    }
+
+    public HashMap<String, String> deleteAssessment(String id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete("assessment_types", "id = \'" + id + "\'", null);
+        db.close();
+
+        HashMap<String, String> result = new HashMap<>();
+        result.put("res", "Assessment Removed");
+        return result;
+    }
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS courses");

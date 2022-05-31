@@ -1,50 +1,24 @@
 package com.michaelhefner.michaelhefnerc196.view;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.Spinner;
+import android.widget.Button;
+import android.widget.EditText;
 
-import com.google.android.material.appbar.CollapsingToolbarLayout;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.michaelhefner.michaelhefnerc196.R;
 import com.michaelhefner.michaelhefnerc196.controller.DBHandler;
-import com.michaelhefner.michaelhefnerc196.databinding.ActivityMainBinding;
-import com.michaelhefner.michaelhefnerc196.databinding.ActivityTermDetailsBinding;
-import com.michaelhefner.michaelhefnerc196.model.Course;
-import com.michaelhefner.michaelhefnerc196.model.Term;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.IntStream;
 
 public class MainActivity extends AppCompatActivity {
-
-    private ActivityMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_main);
-
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-
-        Toolbar toolbar = binding.toolbar;
-        setSupportActionBar(toolbar);
-        CollapsingToolbarLayout toolBarLayout = binding.toolbarLayout;
-        toolBarLayout.setTitle(getTitle());
-
+        setContentView(R.layout.activity_main);
         startActivity(new Intent(this, TermDetails.class));
     }
 

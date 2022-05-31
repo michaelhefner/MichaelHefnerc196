@@ -1,13 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/file"
-        android:title="file" >
-        <!-- "file" submenu -->
+    <item android:id="@+id/add"
+        android:title="@string/add" >
         <menu>
-            <item android:id="@+id/create_new"
-                android:title="create_new" />
-            <item android:id="@+id/open"
-                android:title="open" />
+            <item android:id="@+id/add_course"
+                android:title="@string/course" />
+            <item android:id="@+id/add_instructor"
+                android:title="@string/instructor" />
+            <item android:id="@+id/add_assessment"
+                android:title="@string/assessment" />
+            <item android:id="@+id/add_term"
+                android:title="@string/term" />
+        </menu>
+    </item>
+    <item android:id="@+id/view"
+        android:title="@string/view" >
+        <menu>
+            <item android:id="@+id/view_course"
+                android:title="@string/course" />
+            <item android:id="@+id/view_instructor"
+                android:title="@string/instructor" />
+            <item android:id="@+id/view_assessment"
+                android:title="@string/assessment" />
+            <item android:id="@+id/view_term"
+                android:title="@string/term" />
         </menu>
     </item>
 </menu>

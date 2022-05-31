@@ -9,7 +9,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MichaelHefnerC196">
-
+        <activity
+            android:name=".view.TermList"
+            android:exported="false" />
+        <activity
+            android:name=".view.InstructorList"
+            android:exported="false" />
+        <activity
+            android:name=".view.CourseList"
+            android:exported="false" />
+        <activity
+            android:name=".view.AssessmentList"
+            android:exported="false" />
         <activity
             android:name=".view.CourseView"
             android:exported="false" />
@@ -23,7 +34,7 @@
             android:name=".view.AssessmentView"
             android:exported="false" />
         <activity
-            android:name=".view.InstructorVIew"
+            android:name=".view.InstructorView"
             android:exported="false" />
         <activity
             android:name=".view.MainActivity"

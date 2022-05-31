@@ -5,6 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:scrollbars="vertical"
+    android:background="@color/white"
+
     tools:context=".view.CourseView">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -218,15 +220,40 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/spnInstructor" />
 
+            <TextView
+                android:id="@+id/txtDates"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:textSize="@dimen/label_size"
+
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/spnAssessment"
+                />
             <Button
                 android:id="@+id/btnSubmit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
-                android:text="@string/submit"
+                android:text="@string/save"
+                android:layout_marginStart="25dp"
+                android:layout_marginEnd="25dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/spnAssessment" />
+                app:layout_constraintTop_toBottomOf="@+id/txtDates" />
+            <Button
+                android:id="@+id/btnDelete"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="25dp"
+                android:layout_marginEnd="25dp"
+                android:backgroundTint="@android:color/holo_red_light"
+                android:text="@string/delete"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btnSubmit" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

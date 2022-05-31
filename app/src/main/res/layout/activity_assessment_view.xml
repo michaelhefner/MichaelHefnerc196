@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
+
     tools:context=".view.AssessmentView">
 
     <TextView
@@ -76,15 +78,88 @@
         app:layout_constraintTop_toBottomOf="@+id/txtType"
         />
 
+    <TextView
+        android:id="@+id/txtStartDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="25dp"
+        android:textColor="@color/secondary_text"
+        android:textSize="@dimen/label_size"
+        android:text="@string/start_date"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/edtType"
+        app:layout_constraintTop_toBottomOf="@+id/edtType" />
+
+    <EditText
+        android:id="@+id/edtStartDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="25dp"
+        android:layout_marginEnd="25dp"
+        android:ems="10"
+        android:hint="@string/start_date"
+        android:inputType="date"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/txtStartDate"
+        app:layout_constraintTop_toBottomOf="@+id/txtStartDate"
+        />
+    <TextView
+        android:id="@+id/txtEndDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="25dp"
+        android:textColor="@color/secondary_text"
+        android:textSize="@dimen/label_size"
+        android:text="@string/end_date"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/edtStartDate"
+        app:layout_constraintTop_toBottomOf="@+id/edtStartDate" />
+
+    <EditText
+        android:id="@+id/edtEndDate"
+        style="@style/Widget.AppCompat.AutoCompleteTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="25dp"
+        android:layout_marginEnd="25dp"
+        android:ems="10"
+        android:hint="@string/end_date"
+        android:inputType="date"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/txtEndDate"
+        app:layout_constraintTop_toBottomOf="@+id/txtEndDate" />
+
     <Button
         android:id="@+id/btnSubmit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="25dp"
         android:layout_marginEnd="25dp"
-        android:text="@string/submit"
+        android:text="@string/save"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edtType" />
+        app:layout_constraintTop_toBottomOf="@+id/edtEndDate" />
+
+    <Button
+        android:id="@+id/btnDelete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="25dp"
+        android:layout_marginEnd="25dp"
+        android:backgroundTint="@android:color/holo_red_light"
+        android:text="@string/delete"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnSubmit" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -17,7 +18,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.michaelhefner.michaelhefnerc196.R;
 import com.michaelhefner.michaelhefnerc196.controller.DBHandler;
-import com.michaelhefner.michaelhefnerc196.databinding.ActivityTermDetailsBinding;
 import com.michaelhefner.michaelhefnerc196.model.Course;
 import com.michaelhefner.michaelhefnerc196.model.Term;
 
@@ -32,7 +32,7 @@ public class TermDetails extends AppCompatActivity {
     private DBHandler mDBHandler = new DBHandler(this);
     private Spinner mTermList;
     private Context context;
-    private Spinner mActionSpinner;
+
     private ListView mLSTCourseList;
 
     @Override
@@ -42,13 +42,16 @@ public class TermDetails extends AppCompatActivity {
         setContentView(R.layout.activity_term_details);
 
         Map<String, Class> classes = new HashMap<>();
-        classes.put("Add Instructor", InstructorVIew.class);
+        classes.put("Add Instructor", InstructorView.class);
         classes.put("Add Assessment", AssessmentView.class);
         classes.put("Add Course", CourseView.class);
         classes.put("Add Term", TermView.class);
-        mActionSpinner = findViewById(R.id.actionPicker);
+        /**/
+
         /**/
         populateCourses("");
+        /**/
+
         /**/
         populateTerms("");
         /**/
@@ -58,8 +61,8 @@ public class TermDetails extends AppCompatActivity {
         mTermList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                List<Term> termList = mDBHandler.termQuery("name = \"" + mTermList.getSelectedItem().toString() + "\"");
-                populateCourses("termID = \"" + termList.get(0).getID() + "\"");
+                List<Term> termList = mDBHandler.termQuery("name = \'" + mTermList.getSelectedItem().toString() + "\'");
+                populateCourses("termID = \'" + termList.get(0).getID() + "\'");
             }
 
             @Override
@@ -67,26 +70,44 @@ public class TermDetails extends AppCompatActivity {
 
             }
         });
-        mActionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.i("spinner change", mActionSpinner.getSelectedItem().toString());
-                String selectedItem = mActionSpinner.getSelectedItem().toString();
-                if (!selectedItem.isEmpty() && classes.get(selectedItem) != null) {
-                    Intent intent = new Intent(context, classes.get(mActionSpinner.getSelectedItem().toString()));
-                    startActivity(intent);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) { }
-        });
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_term_details, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.add_term:
+                startActivity(new Intent(this, TermView.class));
+                return true;
+            case R.id.add_assessment:
+                startActivity(new Intent(this, AssessmentView.class));
+                return true;
+            case R.id.add_course:
+                startActivity(new Intent(this, CourseView.class));
+                return true;
+            case R.id.add_instructor:
+                startActivity(new Intent(this, InstructorView.class));
+                return true;
+            case R.id.view_term:
+                startActivity(new Intent(this, TermList.class));
+                return true;
+            case R.id.view_assessment:
+                startActivity(new Intent(this, AssessmentList.class));
+                return true;
+            case R.id.view_course:
+                startActivity(new Intent(this, CourseList.class));
+                return true;
+            case R.id.view_instructor:
+                startActivity(new Intent(this, InstructorList.class));
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
     private void populateCourses(String whereClause) {
         mLSTCourseList = findViewById(R.id.lstCourseList);
@@ -100,36 +121,16 @@ public class TermDetails extends AppCompatActivity {
         ArrayAdapter<String> itemsAdapter =
                 new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, stringList);
         mLSTCourseList.setAdapter(itemsAdapter);
-        mLSTCourseList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.i("term query", mDBHandler.termQuery("id = \"" + courseList.get(i).getTerm() + "\"").get(0).getName());
-                Intent intent = new Intent(context, CourseView.class);
-
-                intent.putExtra("courseID", courseList.get(i).getID());
-                intent.putExtra("startDate", courseList.get(i).getStartDate());
-                intent.putExtra("endDate", courseList.get(i).getEndDate());
-                intent.putExtra("status", courseList.get(i).getStatus());
-//                intent.putExtra("instructor", mDBHandler.assessmentQuery("id = \"" + courseList.get(i).get() + "\"").get(0).getName());
-                intent.putExtra("assessment", mDBHandler.assessmentQuery("id = \"" + courseList.get(i).getAssessment() + "\"").get(0).getName());
-                intent.putExtra("term", mDBHandler.termQuery("id = \"" + courseList.get(i).getTerm() + "\"").get(0).getName());
-                intent.putExtra("title", courseList.get(i).getTitle());
-
-                startActivity(intent);
-            }
-        });
-
-
-        mLSTCourseList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.i("vv", mLSTCourseList.getSelectedItem().toString());
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
+        mLSTCourseList.setOnItemClickListener((adapterView, view, i, l) -> {
+            Intent intent = new Intent(context, CourseView.class);
+            intent.putExtra("courseID", courseList.get(i).getID());
+            intent.putExtra("startDate", courseList.get(i).getStartDate());
+            intent.putExtra("endDate", courseList.get(i).getEndDate());
+            intent.putExtra("status", courseList.get(i).getStatus());
+            intent.putExtra("assessment", courseList.get(i).getAssessment());
+            intent.putExtra("term", courseList.get(i).getTerm());
+            intent.putExtra("title", courseList.get(i).getTitle());
+            startActivity(intent);
         });
     }
 

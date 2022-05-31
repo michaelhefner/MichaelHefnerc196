@@ -19,15 +19,15 @@ import com.michaelhefner.michaelhefnerc196.controller.DBHandler;
 import java.util.HashMap;
 import java.util.Objects;
 
-public class AssessmentView extends AppCompatActivity {
+public class InstructorView extends AppCompatActivity {
 
-    private static final String INPUT_TYPE = "INPUT_TYPE";
-    private static final String INPUT_NAME = "INPUT_NAME";
+    private static final String EMAIL_INPUT = "email";
+    private static final String PHONE_INPUT = "phone";
+    private static final String NAME_INPUT = "name";
     private DBHandler mDBHandler;
     private EditText mNameEDT;
-    private EditText mTypeEDT;
-    private EditText mStartDateEDT;
-    private EditText mEndDateEDT;
+    private EditText mEmailEDT;
+    private EditText mPhoneEDT;
     private Button mAddBTN;
     private Button mDeleteBTN;
     private String mKey;
@@ -36,47 +36,44 @@ public class AssessmentView extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_assessment_view);
+        setContentView(R.layout.activity_insructor_view);
 
         mDBHandler = new DBHandler(this);
-        mStartDateEDT = findViewById(R.id.edtStartDate);
-        mEndDateEDT = findViewById(R.id.edtEndDate);
-        mTypeEDT = findViewById(R.id.edtType);
-        mNameEDT = findViewById(R.id.edtAssessmentName);
+        mEmailEDT = findViewById(R.id.edtEmailAddress);
+        mNameEDT = findViewById(R.id.edtPersonName);
+        mPhoneEDT = findViewById(R.id.edtPhoneNumber);
         mAddBTN = findViewById(R.id.btnSubmit);
         mHeadingTXT = findViewById(R.id.txtHeading);
         mDeleteBTN = findViewById(R.id.btnDelete);
         mKey = null;
 
-
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            mHeadingTXT.setText("Edit Assessment");
+            mHeadingTXT.setText(R.string.edit_instructor);
             mKey = extras.getString("id");
-            mTypeEDT.setText(extras.getString("type"));
+            mEmailEDT.setText(extras.getString("email"));
             mNameEDT.setText(extras.getString("name"));
-            mEndDateEDT.setText(extras.getString("endDate"));
-            mStartDateEDT.setText(extras.getString("startDate"));
+            mPhoneEDT.setText(extras.getString("phone"));
         }
         mAddBTN.setOnClickListener(view -> {
-            String type = mTypeEDT.getText().toString();
+            String email = mEmailEDT.getText().toString();
             String name = mNameEDT.getText().toString();
-            String startDate = mStartDateEDT.getText().toString();
-            String endDate = mEndDateEDT.getText().toString();
+            String phone = mPhoneEDT.getText().toString();
             hideSoftKeyboard(view);
-            HashMap<String, String> newAssessment;
+            HashMap<String, String> newInstructor;
 
             if (this.mKey == null) {
-                newAssessment = mDBHandler.addAssessment(name, type, startDate, endDate);
+                newInstructor = mDBHandler.addInstructor(name, email, phone);
             } else {
-                newAssessment = mDBHandler.editAssessment(mKey, name, type, startDate, endDate);
+                newInstructor = mDBHandler.editInstructor(mKey, name, email, phone);
             }
-            Snackbar snackbar = Snackbar.make(view, Objects.requireNonNull(newAssessment.get("res")), Snackbar.LENGTH_SHORT);
+            Snackbar snackbar = Snackbar.make(view, Objects.requireNonNull(newInstructor.get("res")), Snackbar.LENGTH_SHORT);
             snackbar.show();
             startActivity(new Intent(this, MainActivity.class));
         });
+
         mDeleteBTN.setOnClickListener(view -> {
-            HashMap<String, String> response = mDBHandler.deleteAssessment(mKey);
+            HashMap<String, String> response = mDBHandler.deleteInstructor(mKey);
             Snackbar snackbar = Snackbar.make(view, Objects.requireNonNull(response.get("res")), Snackbar.LENGTH_SHORT);
             snackbar.show();
             startActivity(new Intent(this, MainActivity.class));
@@ -85,18 +82,19 @@ public class AssessmentView extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
-        outState.putString(INPUT_TYPE, mTypeEDT.getText().toString());
-        outState.putString(INPUT_NAME, mNameEDT.getText().toString());
+        outState.putString(EMAIL_INPUT, mEmailEDT.getText().toString());
+        outState.putString(PHONE_INPUT, mPhoneEDT.getText().toString());
+        outState.putString(NAME_INPUT, mNameEDT.getText().toString());
         super.onSaveInstanceState(outState);
     }
 
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-        mTypeEDT.setText(savedInstanceState.getString(INPUT_TYPE));
-        mNameEDT.setText(savedInstanceState.getString(INPUT_NAME));
+        mEmailEDT.setText(savedInstanceState.getString(EMAIL_INPUT));
+        mPhoneEDT.setText(savedInstanceState.getString(PHONE_INPUT));
+        mNameEDT.setText(savedInstanceState.getString(NAME_INPUT));
         super.onRestoreInstanceState(savedInstanceState);
     }
-
     public void hideSoftKeyboard(View view) {
         InputMethodManager imm =(InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
