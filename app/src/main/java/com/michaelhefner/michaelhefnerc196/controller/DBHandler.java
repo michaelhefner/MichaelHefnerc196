@@ -20,7 +20,7 @@ import java.util.List;
 public class DBHandler extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "CourseDB";
-    private static final int DB_VERSION = 19;
+    private static final int DB_VERSION = 20;
     private static final String ID_COL = "id";
     private static final String NAME_COL = "name";
     private static final String TITLE = "title";
@@ -33,6 +33,7 @@ public class DBHandler extends SQLiteOpenHelper {
     private static final String TERM_FK = "termID";
     private static final String INSTRUCTOR_FK = "instructorID";
     private static final String ASSESSMENT_FK = "assessmentID";
+    private static final String NOTES = "notes";
 
     public DBHandler(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -46,6 +47,7 @@ public class DBHandler extends SQLiteOpenHelper {
                 + START_DATE + " TEXT,"
                 + END_DATE + " TEXT,"
                 + STATUS + " TEXT,"
+                + NOTES + " TEXT,"
                 + ASSESSMENT_FK + " INTEGER,"
                 + TERM_FK + " INTEGER,"
                 + INSTRUCTOR_FK + " INTEGER,"
@@ -114,7 +116,6 @@ public class DBHandler extends SQLiteOpenHelper {
         List<Course> courseList = new ArrayList<>();
         try {
             try {
-                Log.i("cursor count", String.valueOf(cursor.getCount()));
                 cursor.moveToFirst();
                 while (!cursor.isAfterLast()) {
                     String title = getValue(cursor, TITLE);
@@ -124,7 +125,8 @@ public class DBHandler extends SQLiteOpenHelper {
                     String term = getValue(cursor, TERM_FK);
                     String assessment = getValue(cursor, ASSESSMENT_FK);
                     String instructor = getValue(cursor, INSTRUCTOR_FK);
-                    Course course = new Course(title, startDate, endDate, status, assessment, term, instructor);
+                    String notes = getValue(cursor, NOTES);
+                    Course course = new Course(title, startDate, endDate, status, assessment, term, instructor, notes);
                     course.setID(getValue(cursor, ID_COL));
                     courseList.add(course);
                     cursor.moveToNext();
@@ -153,7 +155,7 @@ public class DBHandler extends SQLiteOpenHelper {
                     String startDate = getValue(cursor, START_DATE);
                     String endDate = getValue(cursor, END_DATE);
                     String id = getValue(cursor, ID_COL);
-                    Assessment assessment = new Assessment(name, type, startDate, endDate);
+                    Assessment assessment = new Assessment(type, name, startDate, endDate);
                     assessment.setID(id);
                     assessmentList.add(assessment);
                     cursor.moveToNext();
@@ -205,7 +207,7 @@ public class DBHandler extends SQLiteOpenHelper {
      ***************************************/
 
 
-    public HashMap<String, String> addCourse(String courseTitle, String startDate, String endDate, String status, String assessment, String term, String instructor) {
+    public HashMap<String, String> addCourse(String courseTitle, String startDate, String endDate, String status, String assessment, String term, String instructor, String notes) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
@@ -216,8 +218,8 @@ public class DBHandler extends SQLiteOpenHelper {
         values.put(TERM_FK, term);
         values.put(ASSESSMENT_FK, assessment);
         values.put(INSTRUCTOR_FK, instructor);
+        values.put(NOTES, notes);
         db.insert("courses", null, values);
-        Log.i("test", "add new course");
         db.close();
 
         HashMap<String, String> result = new HashMap<>();
@@ -281,7 +283,7 @@ public class DBHandler extends SQLiteOpenHelper {
      EDIT
      ***************************************/
 
-    public HashMap<String, String> editCourse(String courseID, String courseTitle, String startDate, String endDate, String status, String assessment, String term, String instructor) {
+    public HashMap<String, String> editCourse(String courseID, String courseTitle, String startDate, String endDate, String status, String assessment, String term, String instructor, String notes) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
 
@@ -292,8 +294,8 @@ public class DBHandler extends SQLiteOpenHelper {
         values.put(TERM_FK, term);
         values.put(ASSESSMENT_FK, assessment);
         values.put(INSTRUCTOR_FK, instructor);
+        values.put(NOTES, notes);
         db.update("courses", values, "id = \'" + courseID + "\'", null);
-        Log.i("test", "add new course");
         db.close();
 
         HashMap<String, String> result = new HashMap<>();
@@ -367,10 +369,15 @@ public class DBHandler extends SQLiteOpenHelper {
 
     public HashMap<String, String> deleteTerm(String id) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete("terms", "id = \'" + id + "\'", null);
+        HashMap<String, String> result = new HashMap<>();
+
+        if (courseQuery("term = '" + id + "'").size() > 0){
+            result.put("res", "Term not deleted, contains courses.");
+        } else {
+            db.delete("terms", "id = \'" + id + "\'", null);
+        }
         db.close();
 
-        HashMap<String, String> result = new HashMap<>();
         result.put("res", "Term Removed");
         return result;
     }

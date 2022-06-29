@@ -1,87 +1,213 @@
 package com.michaelhefner.michaelhefnerc196.view;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
-import android.widget.Button;
-import android.widget.EditText;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.Spinner;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.michaelhefner.michaelhefnerc196.AlarmIntentService;
 import com.michaelhefner.michaelhefnerc196.R;
 import com.michaelhefner.michaelhefnerc196.controller.DBHandler;
+import com.michaelhefner.michaelhefnerc196.model.Assessment;
+import com.michaelhefner.michaelhefnerc196.model.Course;
+import com.michaelhefner.michaelhefnerc196.model.Term;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.IntStream;
 
 public class MainActivity extends AppCompatActivity {
+
+    private DBHandler mDBHandler = new DBHandler(this);
+    private Spinner mTermList;
+    private Context context;
+
+    private ListView mLSTCourseList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
-        startActivity(new Intent(this, TermDetails.class));
+
+        Map<String, Class> classes = new HashMap<>();
+        classes.put("Add Instructor", InstructorView.class);
+        classes.put("Add Assessment", AssessmentView.class);
+        classes.put("Add Course", CourseView.class);
+        classes.put("Add Term", TermView.class);
+        populateCourses("");
+        populateTerms("");
+        context = this;
+        mTermList.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                List<Term> termList = mDBHandler.termQuery("name = \'" + mTermList.getSelectedItem().toString() + "\'");
+                populateCourses("termID = \'" + termList.get(0).getID() + "\'");
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
     }
 
-}
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return true;
+    }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        context = this;
+        mDBHandler = new DBHandler(this);
+
+        List<Assessment> assessmentList = mDBHandler.assessmentQuery("");
+        List<String> assessDateList = new ArrayList<>();
+        if (assessmentList.size() > 0) {
+            IntStream.range(0, assessmentList.size()).forEach(i -> {
+
+                String[] str = assessmentList.get(i).getStart().split("/");
+                Log.i("date", str[2].concat("-").concat(str[0]).concat("-").concat(str[1]) + " Date");
+
+                for (String s :
+                        str) {
+                    Log.i("string split", s);
+                }
+                Date date = new Date();
+                date.setMonth(Integer.parseInt(str[0]));
+                date.setDate(Integer.parseInt(str[1]));
+                date.setYear(Integer.parseInt(str[2]));
+//                Date date = new Date(str[2].concat("-").concat(str[0]).concat("-").concat(str[1]));
+                Log.i("date", date + " Date");
+                Log.i("stop", "Main Activity Stop" + (date.getTime() - System.currentTimeMillis()));
+
+                Intent intent = new Intent(this, AlarmIntentService.class);
+                intent.putExtra("DURATION", date.getTime() - System.currentTimeMillis());
+                intent.putExtra("MESSAGE", "on Stop");
+                AlarmManager alarmManager =
+                        (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+                PendingIntent pendingIntent =
+                        PendingIntent.getService(this, 1, intent,
+                                PendingIntent.FLAG_IMMUTABLE);
+                if (pendingIntent != null && alarmManager != null) {
+                    alarmManager.cancel(pendingIntent);
+                }
+                alarmManager.set(AlarmManager.RTC_WAKEUP,
+                        SystemClock.elapsedRealtime() + 1000, pendingIntent);
+            });
+        }
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.add_term:
+                startActivity(new Intent(this, TermView.class));
+                return true;
+            case R.id.add_assessment:
+                startActivity(new Intent(this, AssessmentView.class));
+                return true;
+            case R.id.add_course:
+                startActivity(new Intent(this, CourseView.class));
+                return true;
+            case R.id.add_instructor:
+                startActivity(new Intent(this, InstructorView.class));
+                return true;
+            case R.id.view_term:
+                startActivity(new Intent(this, TermList.class));
+                return true;
+            case R.id.view_assessment:
+                startActivity(new Intent(this, AssessmentList.class));
+                return true;
+            case R.id.view_course:
+                startActivity(new Intent(this, CourseList.class));
+                return true;
+            case R.id.view_instructor:
+                startActivity(new Intent(this, InstructorList.class));
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+    private void populateCourses(String whereClause) {
+        mLSTCourseList = findViewById(R.id.lstCourseList);
+        List<Course> courseList = mDBHandler.courseQuery(whereClause);
+        List<String> stringList = new ArrayList<>();
+        if (courseList.size() > 0) {
+            IntStream.range(0, courseList.size()).forEach(i -> {
+                stringList.add(courseList.get(i).getTitle());
+            });
+        }
+        ArrayAdapter<String> itemsAdapter =
+                new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, stringList);
+        mLSTCourseList.setAdapter(itemsAdapter);
+        mLSTCourseList.setOnItemClickListener((adapterView, view, i, l) -> {
+            Intent intent = new Intent(context, CourseView.class);
+            intent.putExtra("courseID", courseList.get(i).getID());
+            intent.putExtra("startDate", courseList.get(i).getStartDate());
+            intent.putExtra("endDate", courseList.get(i).getEndDate());
+            intent.putExtra("status", courseList.get(i).getStatus());
+            intent.putExtra("assessment", courseList.get(i).getAssessment());
+            intent.putExtra("term", courseList.get(i).getTerm());
+            intent.putExtra("title", courseList.get(i).getTitle());
+            intent.putExtra("notes", courseList.get(i).getNotes());
+            startActivity(intent);
+        });
+    }
+
+    private void populateTerms(String whereClause) {
+        mTermList = findViewById(R.id.spnTermList);
+        List<Term> termList = mDBHandler.termQuery(whereClause);
+        List<String> terms = new ArrayList<>();
+        IntStream.range(0, termList.size()).forEach(i -> {
+            terms.add(termList.get(i).getTitle());
+        });
+        mTermList.setAdapter(getStringArrayAdapter(terms));
+    }
+
+    @NonNull
+    private ArrayAdapter<String> getStringArrayAdapter(List<String> stringList) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_dropdown_item, stringList);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        return adapter;
+    }
+}
 /*
 
-
-A.  Create an Android mobile application, compatible for Android 8.0 and higher. The application must include the following functional requirements:
-    1.  Create a user option to enter term titles (e.g., Term 1, Term 2, Spring Term), start dates, and end dates for each term.
-    2.  Create features that allow the user to add as many terms as needed.
-    3.  Implement validation so that a term cannot be deleted if courses are assigned to it.
-    4.  Create features that allow the user to do the following for each term:
-        a.  Add as many courses as needed
-        b.  Display a list of courses associated with each term
-        c.  Display a detailed view of the term title (e.g., Term 1, Term 2, Spring Term), the start date, and the end date for each term
-    5.  Include the following details for each course:
-        •  The course title
-        •  The start date
-        •  The end date
-        •  The status (in progress, completed, dropped, plan to take)
-        •  The course instructors’ names, phone numbers, and e-mail addresses
-    6.  Include features that allow the user to do the following for each course:
-        a.  Add as many assessments as needed.
-        b.  Add a minimum of one optional note per course.
-        c.  Enter, edit, and delete course information.
-        d.  Display optional notes.
-        e.  Display a detailed view of the course, including the end date.
+***    6.  Include features that allow the user to do the following for each course:
         f.  Set alerts for the start and end date, that will trigger when the application is not running.
         g.  Share notes via a sharing feature (either e-mail or SMS) that automatically populates with the notes.
-    7.  Include features that allow the user to do the following for each assessment:
-        a.  Add performance and objective assessments for each course, including the titles and end dates of the assessments.
-        b.  Enter, edit, and delete assessment information.
+
+***    7.  Include features that allow the user to do the following for each assessment:
         c.  Set alerts for start and end dates, that will trigger when the application is not running.
 
-B.  Design the following screen layouts, including appropriate GUI (graphical user interface) elements (e.g., navigation, input, and information) for each layout:
-    •  home screen
-    •  list of terms
-    •  list of courses
-    •  list of assessments
-    •  detailed course view
-    •  detailed term view
-    •  detailed assessment view
 
-C.  Implement a scheduler within your application from Part A and include the following elements:
-        •  an ArrayList
-        •  an intent
-        •  navigation capability between multiple screens using activity
-        •  three activities
-        •  events (e.g., a click event)
-        •  the ability to work in portrait and landscape layout
-        •  interactive capability (e.g., the ability to accept and act upon user input)
-        •  a database to store and retrieve application data
+*** C.  Implement a scheduler within your application from Part A and include the following elements:
+
         •  an application title and an icon
         •  notifications or alerts
-        •  the use of both declarative and programmatic methods to create a user interface
-
-    1.  Include the following interface requirements in the application from part C:
-        •  the ability to scroll vertically
-        •  an action bar
-        •  two layouts
-        •  input controls
-        •  buttons
 
 D.  Create a storyboard to demonstrate application flow that includes each of the menus and screens from part B.
 E.  Provide screen shots of generating the signed APK to demonstrate that you have created a deployment package.

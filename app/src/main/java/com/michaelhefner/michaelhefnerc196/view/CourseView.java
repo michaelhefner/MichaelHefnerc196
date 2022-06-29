@@ -38,6 +38,7 @@ public class CourseView extends AppCompatActivity {
     private TextView mHeadingTXT;
     private EditText mStatusEDT;
     private EditText mTitleEDT;
+    private EditText mNotesEDT;
     private TextView mDatesTXT;
     private Spinner mAssessmentSPN;
     private Spinner mInstructorSPN;
@@ -55,6 +56,7 @@ public class CourseView extends AppCompatActivity {
         mTitleEDT = findViewById(R.id.edtTitle);
         mDatesTXT = findViewById(R.id.txtDates);
         mStatusEDT = findViewById(R.id.edtStatus);
+        mNotesEDT = findViewById(R.id.edtNotes);
         mAssessmentSPN = findViewById(R.id.spnAssessment);
         mTermSPN = findViewById(R.id.spnTermList);
         mInstructorSPN = findViewById(R.id.spnInstructor);
@@ -92,6 +94,7 @@ public class CourseView extends AppCompatActivity {
             mKey = extras.getString("courseID");
             mTitleEDT.setText(extras.getString("title"));
             mStatusEDT.setText(extras.getString("status"));
+            mNotesEDT.setText(extras.getString("notes"));
             Term t = mDBHandler.termQuery(
                             "id = \'" + extras.getString("term") + "\'")
                     .get(0);
@@ -108,9 +111,10 @@ public class CourseView extends AppCompatActivity {
 
         mAddBTN.setOnClickListener(view -> {
             String title = mTitleEDT.getText().toString();
-            String name = mStatusEDT.getText().toString();
+            String status = mStatusEDT.getText().toString();
+            String notes = mNotesEDT.getText().toString();
             List<Assessment> assessment = mDBHandler.assessmentQuery(//"");
-                    "type = \"" + mAssessmentSPN.getSelectedItem().toString() + "\""
+                    "name = \"" + mAssessmentSPN.getSelectedItem().toString() + "\""
             );
 
             List<Term> term = mDBHandler.termQuery(
@@ -127,10 +131,11 @@ public class CourseView extends AppCompatActivity {
                                 title,
                                 term.get(0).getStart(),
                                 term.get(0).getEnd(),
-                                name,
+                                status,
                                 assessment.get(0).getID(),
                                 term.get(0).getID(),
-                                instructor.get(0).getID()
+                                instructor.get(0).getID(),
+                                notes
                         );
             } else {
                 newCourse =
@@ -139,10 +144,11 @@ public class CourseView extends AppCompatActivity {
                                 title,
                                 term.get(0).getStart(),
                                 term.get(0).getEnd(),
-                                name,
+                                status,
                                 assessment.get(0).getID(),
                                 term.get(0).getID(),
-                                instructor.get(0).getID()
+                                instructor.get(0).getID(),
+                                notes
                         );
             }
             Snackbar snackbar = Snackbar.make(

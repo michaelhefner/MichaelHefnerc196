@@ -20,9 +20,10 @@ public class Course {
     private String mTerm;
     private String mAssessment;
     private String mInstructor;
+    private String mNotes;
     private String mID;
 
-    public Course(String title, String startDate, String endDate, String status, String assessment, String term, String instructor) {
+    public Course(String title, String startDate, String endDate, String status, String assessment, String term, String instructor, String notes) {
         setTitle(title);
         setAssessment(assessment);
         setEndDate(endDate);
@@ -94,5 +95,13 @@ public class Course {
 
     public void setInstructor(String instructor) {
         this.mInstructor = instructor;
+    }
+
+    public String getNotes() {
+        return mNotes;
+    }
+
+    public void setNotes(String notes) {
+        this.mNotes = notes;
     }
 }

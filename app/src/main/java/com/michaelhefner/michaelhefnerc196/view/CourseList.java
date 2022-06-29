@@ -52,6 +52,7 @@ public class CourseList extends AppCompatActivity {
             intent.putExtra("assessment",courseList.get(i).getAssessment());
             intent.putExtra("term", courseList.get(i).getTerm());
             intent.putExtra("title", courseList.get(i).getTitle());
+            intent.putExtra("notes", courseList.get(i).getNotes());
             startActivity(intent);
         });
     }

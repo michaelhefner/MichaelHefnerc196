@@ -22,11 +22,11 @@
     <string name="course_list">Course List</string>
     <string name="term_list">Term List</string>
     <string name="term">Term</string>
-    <string-array name="action_picker">
-        <item>Add Course</item>
-        <item>Add Instructor</item>
-        <item>Add Assessment</item>
-        <item>Add Term</item>
+    <string-array name="progress_picker">
+        <item>In Progress</item>
+        <item>Completed</item>
+        <item>Dropped</item>
+        <item>Plan to Take</item>
     </string-array>
     <string-array name="course_picker">
         <item>Courses</item>
@@ -146,4 +146,5 @@
     <string name="password">Password</string>
     <string name="save">Save</string>
     <string name="delete">Delete</string>
+    <string name="notes">Notes</string>
 </resources>
